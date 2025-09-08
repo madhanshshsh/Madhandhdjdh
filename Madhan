@@ -1,0 +1,308 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Happy Birthday! 🎉</title>
+  <style>
+    :root {
+      --bg1: #ff9a9e;
+      --bg2: #fad0c4;
+      --bg3: #fad0c4;
+      --card: #ffffff;
+      --text: #222222;
+      --accent: #ff4d6d;
+    }
+
+    * { box-sizing: border-box; }
+    html, body { height: 100%; }
+    body {
+      margin: 0;
+      font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, "Apple Color Emoji", "Segoe UI Emoji";
+      color: var(--text);
+      background: linear-gradient(135deg, var(--bg1), var(--bg2) 50%, var(--bg3));
+      overflow-x: hidden;
+    }
+
+    .wrap {
+      min-height: 100dvh;
+      display: grid;
+      place-items: center;
+      position: relative;
+      padding: 24px;
+    }
+
+    .card {
+      width: min(720px, 92vw);
+      background: color-mix(in oklab, var(--card), white 6%);
+      backdrop-filter: blur(6px);
+      border-radius: 24px;
+      box-shadow: 0 20px 60px rgba(0,0,0,.15);
+      padding: 28px 24px 20px;
+      position: relative;
+      isolation: isolate;
+    }
+
+    h1 {
+      margin: 0 0 8px;
+      font-size: clamp(28px, 4.2vw, 48px);
+      line-height: 1.05;
+      letter-spacing: -0.02em;
+    }
+
+    .sub {
+      margin: 0 0 20px;
+      font-size: clamp(16px, 2.5vw, 20px);
+      opacity: .8;
+    }
+
+    .controls {
+      display: grid;
+      gap: 10px;
+      grid-template-columns: 1fr auto;
+      margin: 16px 0 6px;
+    }
+
+    input[type="text"] {
+      padding: 12px 14px;
+      border-radius: 14px;
+      border: 1px solid #e5e7eb;
+      outline: none;
+      font-size: 16px;
+      background: #fff;
+    }
+
+    button {
+      padding: 12px 18px;
+      border: none;
+      border-radius: 14px;
+      font-weight: 700;
+      cursor: pointer;
+      background: var(--accent);
+      color: #fff;
+      transition: transform .06s ease, box-shadow .2s ease;
+      box-shadow: 0 8px 20px rgba(255, 77, 109, .3);
+    }
+    button:active { transform: translateY(1px); }
+
+    .badge {
+      display: inline-block;
+      font-size: 13px;
+      background: #111827;
+      color: #fff;
+      padding: 6px 10px;
+      border-radius: 999px;
+      margin-bottom: 14px;
+    }
+
+    .big {
+      font-size: clamp(18px, 2.8vw, 22px);
+      margin-top: 10px;
+      line-height: 1.35;
+    }
+
+    .footer {
+      margin-top: 18px;
+      font-size: 13px;
+      opacity: .7;
+    }
+
+    /* Floating balloons */
+    .balloons {
+      position: absolute;
+      inset: 0;
+      overflow: hidden;
+      pointer-events: none;
+      z-index: 0;
+    }
+    .balloon {
+      position: absolute;
+      width: 26px; height: 34px;
+      border-radius: 50% 50% 45% 45% / 55% 55% 45% 45%;
+      background: radial-gradient(circle at 30% 30%, rgba(255,255,255,.7), rgba(255,255,255,0) 40%),
+                  var(--c);
+      box-shadow: inset -6px -8px 14px rgba(0,0,0,.15);
+      animation: floatUp var(--d) linear infinite;
+      transform: translateY(110%);
+    }
+    .balloon::after {
+      content: "";
+      position: absolute;
+      left: 50%; bottom: -16px;
+      transform: translateX(-50%);
+      width: 2px; height: 18px;
+      background: rgba(0,0,0,.2);
+    }
+
+    @keyframes floatUp {
+      from { transform: translateY(110%) translateX(var(--x, 0)); opacity: .95; }
+      to   { transform: translateY(-130%) translateX(calc(var(--x, 0) * -1)); opacity: .95; }
+    }
+
+    /* Confetti */
+    #confetti {
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      overflow: hidden;
+      z-index: 10;
+    }
+    .piece {
+      position: absolute;
+      width: 10px; height: 14px;
+      will-change: transform, opacity;
+      animation: drop var(--t) linear forwards;
+      transform: translateY(-100vh) rotate(0deg);
+    }
+    @keyframes drop {
+      0%   { transform: translate(var(--sx), -100vh) rotate(0deg); opacity: 1; }
+      100% { transform: translate(var(--ex), 110vh) rotate(var(--rot)); opacity: .9; }
+    }
+
+    /* Nice focus styles */
+    :is(input, button):focus-visible {
+      outline: 3px solid color-mix(in oklab, var(--accent), white 30%);
+      outline-offset: 2px;
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="balloons" aria-hidden="true" id="balloons"></div>
+
+    <div class="card">
+      <span class="badge">🎂 Happy Birthday</span>
+      <h1 id="title">Happy Birthday, <span id="name">Friend</span>! 🎉</h1>
+      <p class="sub">Wishing you a day filled with surprises, smiles, and all your favorite things.</p>
+      <p class="big" id="message">May your year ahead sparkle with joy, good health, and unforgettable adventures. ✨</p>
+
+      <div class="controls">
+        <input id="nameInput" type="text" placeholder="Enter a name (e.g., Ananya)" />
+        <button id="celebrateBtn" type="button">Make a Wish ✨</button>
+      </div>
+
+      <div class="footer">Tip: Add <code>?name=YourName</code> to the URL and share it! Example: <code>birthday.html?name=Sam</code></div>
+    </div>
+  </div>
+
+  <div id="confetti" aria-hidden="true"></div>
+
+  <script>
+    // --- Helpers ---
+    const byId = (id) => document.getElementById(id);
+    const qs = (sel, el=document) => el.querySelector(sel);
+
+    // --- Personalize name from querystring ---
+    const params = new URLSearchParams(location.search);
+    const initialName = params.get('name') || '';
+    const nameEl = byId('name');
+    const inputEl = byId('nameInput');
+
+    if (initialName) {
+      nameEl.textContent = decodeURIComponent(initialName);
+      inputEl.value = decodeURIComponent(initialName);
+      document.title = `Happy Birthday, ${decodeURIComponent(initialName)}! 🎉`;
+    }
+
+    // --- Balloons generator ---
+    const colors = ['#ff4d6d','#f9c846','#6ee7b7','#60a5fa','#c084fc','#f472b6'];
+    const balloonsRoot = byId('balloons');
+
+    function spawnBalloons(count = 16) {
+      for (let i = 0; i < count; i++) {
+        const b = document.createElement('div');
+        b.className = 'balloon';
+        const c = colors[i % colors.length];
+        const left = Math.random() * 100; // vw
+        const drift = (Math.random() * 60 - 30) + 'px';
+        const dur = (14 + Math.random() * 10).toFixed(2) + 's';
+        b.style.setProperty('--c', c);
+        b.style.left = left + 'vw';
+        b.style.setProperty('--x', drift);
+        b.style.setProperty('--d', dur);
+        b.style.opacity = 0.9;
+        balloonsRoot.appendChild(b);
+      }
+    }
+
+    spawnBalloons(26);
+    // Periodically add more for a lively scene
+    setInterval(() => spawnBalloons(6), 5000);
+
+    // --- Confetti burst ---
+    const confettiRoot = byId('confetti');
+
+    function burstConfetti(pieces = 180) {
+      const w = window.innerWidth;
+      for (let i = 0; i < pieces; i++) {
+        const el = document.createElement('div');
+        el.className = 'piece';
+        const size = 6 + Math.random() * 10;
+        el.style.width = size + 'px';
+        el.style.height = (size * 0.7) + 'px';
+        el.style.background = colors[Math.floor(Math.random() * colors.length)];
+        const startX = Math.random() * w;
+        const endX = startX + (Math.random() * 160 - 80);
+        const rot = (Math.random() * 1440 - 720) + 'deg';
+        const time = (8 + Math.random() * 6).toFixed(2) + 's';
+        el.style.setProperty('--sx', startX + 'px');
+        el.style.setProperty('--ex', endX + 'px');
+        el.style.setProperty('--rot', rot);
+        el.style.setProperty('--t', time);
+        confettiRoot.appendChild(el);
+        // Cleanup after animation
+        el.addEventListener('animationend', () => el.remove());
+      }
+    }
+
+    // --- Button interactions ---
+    byId('celebrateBtn').addEventListener('click', () => {
+      const val = inputEl.value.trim();
+      if (val) {
+        nameEl.textContent = val;
+        document.title = `Happy Birthday, ${val}! 🎉`;
+      }
+      burstConfetti();
+    });
+
+    // Enter key to trigger action
+    inputEl.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter') {
+        byId('celebrateBtn').click();
+      }
+    });
+
+    // Accessibility: announce changes for screen readers
+    const titleEl = byId('title');
+    const observer = new MutationObserver(() => {
+      titleEl.setAttribute('aria-live', 'polite');
+    });
+    observer.observe(nameEl, { childList: true });
+  </script>
+</body>
+</html>
+
+
+I dropped a ready-to-use single-file webpage in the canvas 👉 “Happy Birthday Wish (HTML)”.
+
+How to use:
+
+Press “Run/Preview” to see it. Type a name and hit “Make a Wish” for confetti 🎉
+
+To personalize via link, save the file as birthday.html, then open:
+
+birthday.html?name=Ananya (replace with any name)
+
+
+Customize:
+
+Colors: edit the :root variables at the top (--bg1, --bg2, --accent).
+
+Default message: change the <p id="message">…</p> text.
+
+Confetti & balloons: tweak the numbers in spawnBalloons(…) and burstConfetti(…).
+
+
+
+Want a version with a photo, music, or your favorite color theme? Tell me what you like and I’ll tailor it. 🎂✨
+
